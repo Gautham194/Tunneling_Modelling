@@ -36,7 +36,7 @@ V = 5
 
 
 # Use Capacitor Approximation
-# Area = 4micron * 10micron area of top gate
+# Area = 10micron * 10micron area of top gate
 
 def get_E_tunneling(d_hbn_tunnel=5e-9, volt=V):
     top = hbn_dc * grp_dc * inse_dc
@@ -66,8 +66,6 @@ def loop_over_t(num_layers, volt = 5):
         j_arr.append(var2)
 
     plt.plot(d_tunnels, j_arr)
-    plt.xlabel('Thickness')
-    plt.ylabel('Tunnel Current')
     plt.show()
 
 
@@ -82,8 +80,27 @@ def loop_over_v(peak_v, thickness=5e-9):
         j_arr.append(var2)
 
     plt.plot(arr_2, j_arr)
-    plt.xlabel('Volts / V')
-    plt.ylabel('Tunnel Current')
     plt.show()
 
-loop_over_v(5)
+def get_charge_stored(input_v, input_t):
+    e_tunnel = get_E_tunneling(volt=input_v)
+    current = get_fn_current(e_tunnel)
+    charge = current * input_t
+    return charge
+
+def get_gate_capacitance(d_hbn = 5e-9):
+    cp = s2 * hbn_dc / d_hbn
+    return cp
+
+def get_vg_effective(charge, cp):
+    return charge/cp
+
+def get_e_effective(charge):
+    e_eff = charge / (s2 * inse_dc)
+    return e_eff
+
+charge = get_charge_stored(1, 10e-9)
+cp = get_gate_capacitance()
+v_eff = get_vg_effective(charge, cp)
+e_eff = get_e_effective(charge)
+print(charge, cp, v_eff, e_eff, e_eff * d_inse)
