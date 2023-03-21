@@ -137,12 +137,12 @@ print(a, b, c, d, e, f)
 
 q_gate = 0
 pulse_time = 5e-7
-pulse_int = 5e-10
+pulse_int = 5e-13
 t = 0
-app_v = 5e-3
+app_v = 5e-2
 d_t = 5e-9
 
-times = np.linspace(1, 1000, 1000) * pulse_int
+times = np.linspace(1, 1000000, 1000000) * pulse_int
 q_gates = []
 
 for time in times:
@@ -153,10 +153,18 @@ for time in times:
     q_gate += q_int
     q_gates.append(q_gate)
 
-print(q_gates)
+#print(q_gates)
 plt.plot(q_gates)
 plt.show()
 
-dum1 = get_v_gate(q_gates[-1])
-dum2 = get_v_gate_alt(q_gates[-1])
-print(dum1, dum2)
+# Model InSe gate modulation - (using approx data from https://link.springer.com/article/10.1186/s11671-019-3106-8#Tab1)
+# Modulation is ~60mV/decade in range +/- 0.3V
+# E equivalent = 3.51e8 * +/- 0.3
+
+e_gates = [get_e_gate(q) for q in q_gates]
+v_equiv = [e/(3.51e8) for e in e_gates]
+mod_equiv = [10**(-v/0.06) for v in v_equiv]
+plt.plot(times, mod_equiv)
+plt.ylabel('~Modulation Multiplier')
+plt.xlabel("Time")
+plt.show()
